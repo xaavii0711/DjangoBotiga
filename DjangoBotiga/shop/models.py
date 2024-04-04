@@ -4,6 +4,7 @@ from django.db import models
 class Categoria(models.Model):
     nom = models.CharField(max_length=100)
     descripcio = models.TextField(blank=True)
+    parent = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
     def __str__(self):
         return self.nom
 
@@ -24,7 +25,7 @@ class Producte(models.Model):
 
 class Cistella(models.Model):
     usuari = models.ForeignKey(User, on_delete=models.CASCADE)
-    producte = models.ForeignKey(Producte, on_delete=models.CASCADE)
+    producte = models.ManyToManyField(Producte)
     quantitat = models.IntegerField(default=1)
 
 class Compra(models.Model):
