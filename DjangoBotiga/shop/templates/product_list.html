@@ -1,0 +1,49 @@
+<!-- miapp/templates/miapp/product_list.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Productos</title>
+</head>
+<body>
+    <h1>Lista de Productos</h1>
+    
+    <form id="categoryForm" method="get">
+        <label for="categoria">Selecciona una categoría:</label>
+        <select name="category_id" id="categoria" onchange="updateAction()">
+            <option value="">Todas las categorías</option>
+            {% for categoria in categorias %}
+            <option value="{{ categoria.id }}">{{ categoria.nom }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Filtrar</button>
+    </form>
+    
+    <ul>
+        {% for producte in productos %}
+        <li>
+            <strong>{{ producte.nom }}</strong>
+            <br>
+            Descripción: {{ producte.descripcio }}
+            <br>
+            Precio: {{ producte.preu }}
+            <br>
+            Categoría: {{ producte.categoria }}
+            <br>
+            Tags: {% for tag in producte.tags.all %}{{ tag.nom }}{% if not forloop.last %}, {% endif %}{% endfor %}
+            <br>
+            Cantidad Disponible: {{ producte.quantitat_disponible }}
+        </li>
+        {% endfor %}
+    </ul>
+
+    <script>
+        function updateAction() {
+            var form = document.getElementById('categoryForm');
+            var categoryId = document.getElementById('categoria').value;
+            var url = window.location.href.split('?')[0];  // Obtener la URL base sin query string
+            form.action = url + "cat/" + categoryId + "/";
+        }
+    </script>
+</body>
+</html>

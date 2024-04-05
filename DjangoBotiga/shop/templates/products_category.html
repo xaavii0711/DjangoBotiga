@@ -1,0 +1,27 @@
+<!-- miapp/templates/miapp/productos_por_categoria.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Productos por Categoría</title>
+</head>
+<body>
+    <h1>Productos de la categoría "{{ categoria.nom }}"</h1>
+    
+    <ul>
+        {% for producto in productos %}
+        <li>
+            <strong>{{ producto.nom }}</strong>
+            <br>
+            Descripción: {{ producto.descripcio }}
+            <br>
+            Precio: {{ producto.preu }}
+            <br>
+            Tags: {% for tag in producto.tags.all %}{{ tag.nom }}{% if not forloop.last %}, {% endif %}{% endfor %}
+            <br>
+            Cantidad Disponible: {{ producto.quantitat_disponible }}
+        </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
