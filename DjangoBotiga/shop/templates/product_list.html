@@ -1,49 +1,126 @@
-<!-- miapp/templates/miapp/product_list.html -->
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <title>Lista de Productos</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <style>
+        .product {
+            width: 30%;
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            display: inline-block;
+            vertical-align: top;
+        }
+
+        .product-info {
+            margin-bottom: 10px;
+        }
+
+        .add-to-cart {
+            background-color: #007bff;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
 </head>
+
 <body>
     <h1>Lista de Productos</h1>
-    
+
     <form id="categoryForm" method="get">
         <label for="categoria">Selecciona una categoría:</label>
         <select name="category_id" id="categoria" onchange="updateAction()">
-            <option value="">Todas las categorías</option>
+            <option value="" selected>Todas las categorías</option>
             {% for categoria in categorias %}
             <option value="{{ categoria.id }}">{{ categoria.nom }}</option>
             {% endfor %}
         </select>
         <button type="submit">Filtrar</button>
     </form>
-    
-    <ul>
+
+    <div id="productContainer">
         {% for producte in productos %}
-        <li>
-            <strong>{{ producte.nom }}</strong>
-            <br>
-            Descripción: {{ producte.descripcio }}
-            <br>
-            Precio: {{ producte.preu }}
-            <br>
-            Categoría: {{ producte.categoria }}
-            <br>
-            Tags: {% for tag in producte.tags.all %}{{ tag.nom }}{% if not forloop.last %}, {% endif %}{% endfor %}
-            <br>
-            Cantidad Disponible: {{ producte.quantitat_disponible }}
-        </li>
+        <div class="product">
+            <div class="product-info">
+                <strong>{{ producte.nom }}</strong>
+                <br>
+                Descripción: {{ producte.descripcio }}
+                <br>
+                Precio: {{ producte.preu }}
+                <br>
+                Categoría: {{ producte.categoria }}
+                <br>
+                Cantidad Disponible: {{ producte.quantitat_disponible }}
+            </div>
+            <button class="add-to-cart" onclick="addToCart({{ producte.id }})">Afegir a la Cistella</button>
+        </div>
         {% endfor %}
-    </ul>
+    </div>
 
     <script>
+        function displayProds(res) {
+            const productes = res.productes;
+            $('#productContainer').empty();
+            productes.forEach(producte => {
+                const productHtml = `
+                    <div class="product">
+                        <div class="product-info">
+                            <strong>${producte.nom}</strong>
+                            <br>
+                            Descripción: ${producte.descripcio}
+                            <br>
+                            Precio: ${producte.preu}
+                            <br>
+                            Cantidad Disponible: ${producte.quantitat_disponible}
+                        </div>
+                        <button class="add-to-cart" onclick="addToCart(${producte.id})">Afegir a la Cistella</button>
+                    </div>
+                `;
+                $('#productContainer').append(productHtml);
+            });
+        }
+
+        $('select').on('change', function () {
+            var id = $(this).val();
+            $.ajax({
+                url: 'http://127.0.0.1:8000/shop/api/prods/' + id,
+                method: "GET",
+                success: displayProds,
+                error: function (xhr, status, error) {
+                    // Función que se ejecuta cuando hay un error en la petición
+                    console.error('Error en la petición:', error);
+                }
+            });
+        });
+
         function updateAction() {
             var form = document.getElementById('categoryForm');
             var categoryId = document.getElementById('categoria').value;
             var url = window.location.href.split('?')[0];  // Obtener la URL base sin query string
             form.action = url + "cat/" + categoryId + "/";
         }
+
+        function addToCart(productId) {
+            $.ajax({
+                url: `/add-to-cart/${productId}/`,  // URL para agregar al carrito
+                method: "GET",
+                success: function (response) {
+                    // Redirigir a la página del carrito después de agregar el producto
+                    window.location.href = '/carrito/';  // Cambio aquí
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error al agregar al carrito:', error);
+                }
+            });
+        }
+
     </script>
 </body>
+
 </html>

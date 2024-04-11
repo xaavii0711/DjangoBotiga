@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Carrito de Compras</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <h1>Carrito de Compras</h1>
+
+    <ul id="cartList">
+        <!-- Aquí se mostrarán los productos agregados al carrito -->
+    </ul>
+
+    <button onclick="checkout()">Finalizar Compra</button>
+
+    <script>
+        // Array para almacenar los productos en el carrito
+        const cart = [];
+
+        // Función para obtener los parámetros de la URL
+        function getUrlParams() {
+            const params = {};
+            window.location.search.replace(/[?&]+([^=&]+)=([^&]*)/gi, function (match, key, value) {
+                params[key] = value;
+            });
+            return params;
+        }
+
+        $(document).ready(function () {
+            // Obtener el product_id de la URL
+            const params = getUrlParams();
+            const productId = params['product_id'];
+
+            if (productId) {
+                // Simular la obtención de detalles del producto por AJAX
+                const product = {
+                    id: productId,
+                    nombre: "Producto de Ejemplo",
+                    precio: 10
+                };
+
+                cart.push(product);
+                updateCartView();
+            }
+        });
+
+        function updateCartView() {
+            const cartList = document.getElementById('cartList');
+            cartList.innerHTML = '';  // Limpiar la lista
+
+            cart.forEach(product => {
+                const li = document.createElement('li');
+                li.textContent = `${product.nombre} - ${product.precio}€`;
+                cartList.appendChild(li);
+            });
+        }
+
+        function checkout() {
+            // Aquí puedes implementar la lógica para finalizar la compra
+            console.log('Productos en el carrito:', cart);
+            alert('Compra realizada con éxito');
+            // Puedes enviar los detalles del carrito al servidor para procesar la compra
+        }
+    </script>
+</body>
+
+</html>
